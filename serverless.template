@@ -1,0 +1,43 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "Notifications Microservice",
+
+  "Resources": {
+
+    "NotificationQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "notification-queue"
+      }
+    },
+
+    "NotificationsFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+
+        "Handler": "ms-notifications::ms_notifications.LambdaEntryPoint::FunctionHandler",
+        "Runtime": "dotnet8",
+        "MemorySize": 512,
+        "Timeout": 30,
+
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          "AmazonSESFullAccess"
+        ],
+
+        "Events": {
+          "NotificationQueueEvent": {
+            "Type": "SQS",
+            "Properties": {
+              "Queue": {
+                "GetAtt": [ "NotificationQueue", "Arn" ]
+              },
+              "BatchSize": 10
+            }
+          }
+        }
+      }
+    }
+  }
+}
