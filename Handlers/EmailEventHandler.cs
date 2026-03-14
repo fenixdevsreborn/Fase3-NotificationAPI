@@ -1,30 +1,22 @@
-﻿using Amazon.Lambda.SQSEvents;
+﻿using Amazon.Lambda.Core;
 using ms_notifications.Models;
 using ms_notifications.Services;
-using System.Text.Json;
 
-namespace ms_notifications.Handlers
+namespace NotificationLambda.Handlers;
+
+public class EmailEventHandler
 {
-  public class EmailEventHandler
+  private readonly EmailService _service;
+
+  public EmailEventHandler()
   {
-    private readonly EmailService _emailService;
+    _service = new EmailService();
+  }
 
-    public EmailEventHandler(EmailService emailService)
-    {
-      _emailService = emailService;
-    }
+  public async Task Handle(EmailEvent messageBody, ILambdaContext context)
+  {
+    context.Logger.LogInformation($"Processando mensagem: {messageBody.Title} email: {messageBody.Recipient}");
 
-    public async Task Handle(SQSEvent evnt)
-    {
-      foreach (var message in evnt.Records)
-      {
-        var emailEvent = JsonSerializer.Deserialize<EmailEvent>(message.Body);
-
-        if (emailEvent != null)
-        {
-          await _emailService.SendEmailAsync(emailEvent);
-        }
-      }
-    }
+    await _service.SendEmailAsync(messageBody);
   }
 }

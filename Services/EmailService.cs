@@ -6,21 +6,14 @@ namespace ms_notifications.Services
 {
   public class EmailService
   {
-    private readonly IConfiguration _configuration;
-
-    public EmailService(IConfiguration configuration)
-    {
-      _configuration = configuration;
-    }
-
     public async Task SendEmailAsync(EmailEvent emailEvent)
     {
       try
       {
-        var smtpServer = _configuration["Email:SmtpServer"] ?? throw new InvalidOperationException("SMTP server not configured");
-        var smtpPort = _configuration["Email:SmtpPort"] ?? throw new InvalidOperationException("SMTP port not configured");
-        var smtpUser = _configuration["Email:SmtpUser"] ?? throw new InvalidOperationException("SMTP user not configured");
-        var smtpPass = _configuration["Email:SmtpPass"] ?? throw new InvalidOperationException("SMTP password not configured");
+        var smtpServer = Environment.GetEnvironmentVariable("SMTP_SERVER") ?? throw new InvalidOperationException("SMTP server not configured");
+        var smtpPort = Environment.GetEnvironmentVariable("SMTP_PORT") ?? throw new InvalidOperationException("SMTP port not configured");
+        var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER") ?? throw new InvalidOperationException("SMTP user not configured");
+        var smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS") ?? throw new InvalidOperationException("SMTP password not configured");
 
         using var client = new SmtpClient(smtpServer)
         {
@@ -33,7 +26,7 @@ namespace ms_notifications.Services
 
         var mail = new MailMessage
         {
-          From = new MailAddress(emailEvent.Sender ?? smtpUser, "Game Store"),
+          From = new MailAddress(smtpUser, "Game Store"),
           Subject = emailEvent.Title,
           Body = htmlBody,
           IsBodyHtml = true

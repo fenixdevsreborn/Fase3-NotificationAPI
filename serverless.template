@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "Notifications Microservice",
+  "Description": "Notification Lambda",
 
   "Resources": {
 
@@ -12,31 +12,53 @@
       }
     },
 
-    "NotificationsFunction": {
+    "NotificationFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-
-        "Handler": "ms-notifications::ms_notifications.LambdaEntryPoint::FunctionHandler",
+        "Handler": "NotificationLambda::NotificationLambda.Function::FunctionHandler",
         "Runtime": "dotnet8",
-        "MemorySize": 512,
+        "CodeUri": "",
+        "MemorySize": 256,
         "Timeout": 30,
-
+        "Environment": {
+          "Variables": {
+            "SMTP_SERVER": "smtp.gmail.com",
+            "SMTP_PORT": "587",
+            "SMTP_USER": "testsmract@gmail.com",
+            "SMTP_PASS": "tykc wtwy dstq vwwy"
+          }
+        },
         "Policies": [
           "AWSLambdaBasicExecutionRole",
-          "AmazonSESFullAccess"
+          "AmazonSQSFullAccess"
         ],
-
         "Events": {
-          "NotificationQueueEvent": {
+          "SQSTrigger": {
             "Type": "SQS",
             "Properties": {
               "Queue": {
-                "GetAtt": [ "NotificationQueue", "Arn" ]
+                "Fn::GetAtt": ["NotificationQueue", "Arn"]
               },
               "BatchSize": 10
             }
           }
         }
+      }
+    }
+  },
+
+  "Outputs": {
+    "NotificationQueueUrl": {
+      "Description": "URL da fila SQS",
+      "Value": {
+        "Ref": "NotificationQueue"
+      }
+    },
+
+    "NotificationQueueArn": {
+      "Description": "ARN da fila",
+      "Value": {
+        "Fn::GetAtt": ["NotificationQueue", "Arn"]
       }
     }
   }

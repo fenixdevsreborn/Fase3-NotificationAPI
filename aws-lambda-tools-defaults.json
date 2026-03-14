@@ -8,7 +8,9 @@
   "profile": "",
   "region": "",
   "configuration": "Release",
-  "s3-prefix": "ms-notifications/",
-  "template": "serverless.template",
-  "template-parameters": ""
+  "function-architecture": "x86_64",
+  "function-runtime": "dotnet10",
+  "function-memory-size": 512,
+  "function-timeout": 30,
+  "function-handler": "NotificationLambda::NotificationLambda.Function::FunctionHandler"
 }
