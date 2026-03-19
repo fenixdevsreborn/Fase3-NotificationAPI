@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using Amazon.XRay.Recorder.Core;
 using ms_notifications.Models;
 
 namespace ms_notifications.Services
@@ -34,7 +35,11 @@ namespace ms_notifications.Services
 
         mail.To.Add(emailEvent.Recipient);
 
+        AWSXRayRecorder.Instance.BeginSubsegment("SendEmail");
+
         await client.SendMailAsync(mail);
+        
+        AWSXRayRecorder.Instance.EndSubsegment();
       }
       catch (Exception ex)
       {

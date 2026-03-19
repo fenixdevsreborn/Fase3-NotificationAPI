@@ -20,6 +20,7 @@
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
+        "Tracing": "Active",
         "Environment": {
           "Variables": {
             "SMTP_SERVER": "smtp.gmail.com",
@@ -30,14 +31,26 @@
         },
         "Policies": [
           "AWSLambdaBasicExecutionRole",
-          "AmazonSQSFullAccess"
+          "AmazonSQSFullAccess",
+          {
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "xray:PutTraceSegments",
+                  "xray:PutTelemetryRecords"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
         ],
         "Events": {
           "SQSTrigger": {
             "Type": "SQS",
             "Properties": {
               "Queue": {
-                "Fn::GetAtt": ["NotificationQueue", "Arn"]
+                "Fn::GetAtt": [ "NotificationQueue", "Arn" ]
               },
               "BatchSize": 10
             }
