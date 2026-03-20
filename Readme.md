@@ -1,49 +1,175 @@
-# AWS Lambda Empty Function Project
+# 🔔 Notifications API - Fase 3 (MVP AWS)
 
-This starter project consists of:
-* Function.cs - class file containing a class with a single function handler method
-* aws-lambda-tools-defaults.json - default argument settings for use with Visual Studio and command line deployment tools for AWS
+## 📌 Visão Geral
 
-You may also have a test project depending on the options selected.
+A **Notifications API** é um microsserviço responsável pelo envio e gerenciamento de notificações dentro do ecossistema da Fase 3.
 
-The generated function handler is a simple method accepting a string argument that returns the uppercase equivalent of the input string. Replace the body of this method, and parameters, to suit your needs. 
+Construída sob uma arquitetura **serverless e orientada a eventos na AWS**, esta API permite a comunicação assíncrona entre serviços, garantindo que usuários sejam notificados sobre eventos relevantes como transações, atualizações e ações do sistema.
 
-## Here are some steps to follow from Visual Studio:
+---
 
-To deploy your function to AWS Lambda, right click the project in Solution Explorer and select *Publish to AWS Lambda*.
+## 🎯 Objetivo
 
-To view your deployed function open its Function View window by double-clicking the function name shown beneath the AWS Lambda node in the AWS Explorer tree.
+* Centralizar o envio de notificações do sistema
+* Desacoplar comunicação entre microsserviços
+* Suportar múltiplos canais de notificação (extensível)
+* Garantir escalabilidade e resiliência
 
-To perform testing against your deployed function use the Test Invoke tab in the opened Function View window.
+---
 
-To configure event sources for your deployed function, for example to have your function invoked when an object is created in an Amazon S3 bucket, use the Event Sources tab in the opened Function View window.
+## 🏗️ Arquitetura
 
-To update the runtime configuration of your deployed function use the Configuration tab in the opened Function View window.
+A aplicação segue **Arquitetura Hexagonal (Ports & Adapters)** combinada com **event-driven architecture**, ideal para sistemas distribuídos.
 
-To view execution logs of invocations of your function use the Logs tab in the opened Function View window.
+### 🔹 Camadas
 
-## Here are some steps to follow to get started from the command line:
+* **Domain**
 
-Once you have edited your template and code you can deploy your application using the [Amazon.Lambda.Tools Global Tool](https://github.com/aws/aws-extensions-for-dotnet-cli#aws-lambda-amazonlambdatools) from the command line.
+  * Entidades de notificação
+  * Regras de negócio
+  * Contratos (interfaces)
 
-Install Amazon.Lambda.Tools Global Tools if not already installed.
+* **Application**
+
+  * Casos de uso (SendNotification, ProcessEvent, etc.)
+  * Orquestração de eventos
+
+* **Infrastructure**
+
+  * Integração com serviços AWS (mensageria, envio)
+  * Implementações concretas
+
+* **API / EntryPoint**
+
+  * AWS Lambda handlers
+  * Recebimento de eventos ou requisições HTTP
+
+---
+
+## ☁️ Infraestrutura AWS
+
+A Notifications API utiliza serviços gerenciados para processamento e entrega de mensagens:
+
+* **AWS Lambda**
+
+  * Processamento das notificações
+
+* **Amazon API Gateway**
+
+  * Entrada HTTP (quando aplicável)
+
+* **Amazon SNS / SQS** *(quando aplicável)*
+
+  * Comunicação assíncrona entre serviços
+
+* **AWS CloudWatch**
+
+  * Logs e monitoramento
+
+* **AWS IAM**
+
+  * Controle de permissões
+
+💡 A AWS oferece serviços nativos para gerenciamento de notificações com suporte a múltiplos canais como e-mail, chat e push, permitindo distribuição eficiente de eventos do sistema ([Amazon Web Services, Inc.][1])
+
+---
+
+## 🔗 Funcionalidades
+
+* 🔔 Envio de notificações
+* 📩 Processamento de eventos
+* 📡 Integração com outros microsserviços
+* 📊 Possível rastreamento de status (entregue, falha, pendente)
+* 📬 Suporte a múltiplos canais (extensível)
+
+---
+
+## 🔄 Fluxo de Funcionamento
+
+1. Um evento ocorre (ex: pagamento aprovado)
+2. O serviço de origem publica o evento
+3. A Notifications API consome esse evento
+4. A notificação é processada
+5. O usuário recebe a mensagem (email, push, etc.)
+
+➡️ Esse modelo reduz acoplamento e melhora escalabilidade do sistema distribuído
+
+---
+
+## 🔐 Segurança
+
+* Validação de eventos recebidos
+* Controle via IAM
+* Isolamento entre serviços
+* Possível uso de filas para garantir entrega (retry)
+
+---
+
+## 🚀 Stack Tecnológica
+
+* **.NET 8**
+* **C#**
+* **AWS Lambda**
+* **API Gateway**
+* **SNS / SQS**
+* **CloudWatch**
+* **xUnit + Moq**
+
+---
+
+## ⚙️ Execução do Projeto
+
+### 🔧 Pré-requisitos
+
+* .NET 8 SDK
+* AWS CLI configurado
+* Conta AWS ativa
+* Amazon Lambda Tools
+
+---
+
+### ▶️ Execução local
+
+```bash
+dotnet restore
+dotnet build
+dotnet run
 ```
-    dotnet tool install -g Amazon.Lambda.Tools
+
+---
+
+### ☁️ Deploy na AWS
+
+```bash
+dotnet lambda deploy-serverless
 ```
 
-If already installed check if new version is available.
-```
-    dotnet tool update -g Amazon.Lambda.Tools
+Ou via infraestrutura como código:
+
+```bash
+terraform init
+terraform apply
 ```
 
-Execute unit tests
-```
-    cd "NotificationLambda/test/NotificationLambda.Tests"
-    dotnet test
+---
+
+## 📦 Estrutura do Projeto
+
+```bash
+src/
+ ├── Domain/
+ ├── Application/
+ ├── Infrastructure/
+ ├── API/
+ └── Shared/
 ```
 
-Deploy function to AWS Lambda
-```
-    cd "NotificationLambda/src/NotificationLambda"
-    dotnet lambda deploy-function
-```
+---
+
+## 🔄 Integração com o Ecossistema
+
+A Notifications API consome eventos de:
+
+* 👤 Users API → criação/atualização de usuário
+* 💳 Payments API → status de pagamento
+* 🎮 Games API → ações relacionadas a jogos
