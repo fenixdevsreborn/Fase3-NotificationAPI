@@ -15,9 +15,8 @@
     "NotificationFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "NotificationLambda::NotificationLambda.Function::FunctionHandler",
+        "Handler": "ms-notifications::ms_notifications.Function::FunctionHandler",
         "Runtime": "dotnet8",
-        "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
         "Tracing": "Active",

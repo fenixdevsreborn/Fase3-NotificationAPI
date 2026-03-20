@@ -2,9 +2,9 @@ using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using ms_notifications.Models;
-using NotificationLambda.Handlers;
+using ms_notifications.Handlers;
 
-namespace NotificationLambda;
+namespace ms_notifications;
 
 public class Function
 {
@@ -20,6 +20,8 @@ public class Function
     foreach (var message in evnt.Records)
     {
       var emailEvent = JsonSerializer.Deserialize<EmailEvent>(message.Body);
+      if (emailEvent == null)
+        throw new Exception("Invalid message body");
       await _handler.Handle(emailEvent, context);
     }
   }

@@ -43,6 +43,7 @@ namespace ms_notifications.Services
       }
       catch (Exception ex)
       {
+        Console.WriteLine(ex);
         throw;
       }
     }

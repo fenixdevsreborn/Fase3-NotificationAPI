@@ -2,7 +2,7 @@
 using ms_notifications.Models;
 using ms_notifications.Services;
 
-namespace NotificationLambda.Handlers;
+namespace ms_notifications.Handlers;
 
 public class EmailEventHandler
 {
